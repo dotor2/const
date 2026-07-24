@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>حفظ الانشاءات الوزارية (AI)</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #1cb0f6;
+            --primary-shadow: #1899d6;
+            --success: #58cc02;
+            --success-shadow: #58a700;
+            --error: #ff4b4b;
+            --error-shadow: #ea2b2b;
+            --warning: #ffc800;
+            --warning-shadow: #d1a300;
+            --bg-color: #f7f9fa;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: var(--bg-color);
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            touch-action: pan-y; 
+            overflow-x: hidden;
+        }
+
+        input, textarea {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+
+        .en-text {
+            font-family: 'Inter', sans-serif;
+            direction: ltr;
+        }
+
+        .btn-duo {
+            position: relative;
+            border-radius: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            transition: all 0.1s ease;
+            transform: translateY(0);
+        }
+        .btn-duo:active:not(:disabled) {
+            transform: translateY(4px);
+            box-shadow: none !important;
+        }
+        .btn-duo:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: translateY(4px);
+            box-shadow: none !important;
+        }
+        
+        .btn-primary { background-color: var(--primary); color: white; box-shadow: 0 4px 0 var(--primary-shadow); }
+        .btn-success { background-color: var(--success); color: white; box-shadow: 0 4px 0 var(--success-shadow); }
+        .btn-error { background-color: var(--error); color: white; box-shadow: 0 4px 0 var(--error-shadow); }
+        .btn-warning { background-color: var(--warning); color: white; box-shadow: 0 4px 0 var(--warning-shadow); }
+
+        .app-container {
+            max-width: 600px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background-color: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .word-chip {
+            background: white;
+            border: 2px solid #e5e5e5;
+            border-bottom-width: 4px;
+            border-radius: 12px;
+            padding: 8px 16px;
+            font-size: 1.1rem;
+            color: #4b4b4b;
+            cursor: pointer;
+            transition: all 0.1s;
+            display: inline-block;
+            margin: 4px;
+        }
+        .word-chip:active {
+            transform: translateY(2px);
+            border-bottom-width: 2px;
+        }
+        .word-chip.selected {
+            background: #e5e5e5;
+            color: transparent;
+            pointer-events: none;
+            border-bottom-width: 2px;
+            transform: translateY(2px);
+        }
+        .word-chip-slot {
+            min-width: 60px;
+            height: 44px;
+            border: 2px dashed #cecece;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 4px;
+            vertical-align: middle;
+            cursor: pointer;
+        }
+        .word-chip-slot.filled {
+            border: 2px solid #1cb0f6;
+            background-color: #f0f9ff;
+            color: #1cb0f6;
+            font-weight: bold;
+            border-bottom-width: 4px;
+        }
+
+        .target-slot {
+            min-height: 60px;
+            border-bottom: 2px dashed #cecece;
+            padding: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .type-input {
+            border: 2px solid #e5e5e5;
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-size: 1.1rem;
+            width: 100px;
+            text-align: center;
+            outline: none;
+            transition: all 0.2s;
+            margin: 4px;
+            display: inline-block;
+        }
+        .type-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(28,176,246,0.2);
+        }
+        .type-input.correct {
+            border-color: var(--success);
+            background-color: #f0fdf4;
+            color: var(--success-shadow);
+        }
+        .type-input.wrong {
+            border-color: var(--error);
+            background-color: #fef2f2;
+            color: var(--error-shadow);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+        }
+        .shake-animation { animation: shake 0.4s; }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 12px;
+            background-color: #e5e5e5;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--success);
+            border-radius: 6px;
+            transition: width 0.3s ease;
+        }
+        
+        .line-item {
+            transition: all 0.2s;
+        }
+        .line-item.completed {
+            opacity: 0.8;
+            background-color: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+        .line-item.selected-multi {
+            border-color: var(--primary);
+            background-color: #f0f9ff;
+            transform: scale(0.98);
+        }
+        
+        /* Timer Circle */
+        .timer-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 8px solid #e5e5e5;
+            border-top-color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 0 auto;
+            transition: all 1s linear;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div id="app" class="app-container flex flex-col relative">
+        
+        <!-- شاشة التحميل -->
+        <div id="loading-screen" class="flex-1 flex flex-col items-center justify-center">
+            <i class="fas fa-circle-notch fa-spin text-4xl text-blue-500 mb-4"></i>
+            <h2 class="text-xl font-bold">جاري التهيئة...</h2>
+        </div>
+
+        <!-- الشاشة الرئيسية -->
+        <div id="home-screen" class="hidden flex-1 flex flex-col bg-gray-50">
+            <div class="p-6 bg-white shadow-sm flex justify-between items-center z-10 sticky top-0">
+                <h1 class="text-2xl font-bold text-gray-800">انشاءاتي الوزارية</h1>
+                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
+                    <i class="fas fa-brain"></i>
+                </div>
+            </div>
+            
+            <div id="essays-list" class="flex-1 p-4 overflow-y-auto pb-24 space-y-4">
+                <!-- سيتم حقن الانشاءات وبانر التليجرام هنا -->
+            </div>
+
+            <button onclick="showScreen('add-screen')" class="absolute bottom-6 left-6 w-16 h-16 bg-blue-500 text-white rounded-2xl shadow-lg flex items-center justify-center text-3xl hover:bg-blue-600 transition-colors btn-primary" style="border-radius: 20px;">
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
+
+        <!-- شاشة اضافة انشاء جديد -->
+        <div id="add-screen" class="hidden flex-1 flex flex-col bg-white">
+            <div class="p-4 border-b flex items-center">
+                <button onclick="showScreen('home-screen')" class="text-gray-500 hover:text-gray-800 p-2 text-xl">
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+                <h2 class="text-xl font-bold mr-4">إضافة إنشاء جديد</h2>
+            </div>
+            <div class="p-6 flex-1 flex flex-col overflow-y-auto">
+                <div class="bg-blue-50 text-blue-800 p-4 rounded-xl mb-6 text-sm flex items-start gap-3">
+                    <i class="fas fa-robot mt-1 text-lg"></i>
+                    <p>سيقوم <b>الذكاء الاصطناعي</b> بتحليل الإنشاء وتقسيمه إلى أسطر قصيرة ومترابطة لتسهيل حفظه في عقلك بأسرع وقت.</p>
+                </div>
+
+                <label class="block text-sm font-bold text-gray-700 mb-2">اسم الانشاء (بالعربي)</label>
+                <input type="text" id="essay-title" placeholder="مثال: التدخين، العمل في البنك..." class="w-full p-4 border-2 border-gray-200 rounded-xl mb-6 focus:outline-none focus:border-blue-500 transition-colors text-lg">
+                
+                <label class="block text-sm font-bold text-gray-700 mb-2">نص الانشاء (120 كلمة بالانجليزي)</label>
+                <textarea id="essay-content" placeholder="Paste your english essay here..." class="w-full p-4 border-2 border-gray-200 rounded-xl flex-1 min-h-[200px] focus:outline-none focus:border-blue-500 transition-colors en-text text-lg resize-none"></textarea>
+                
+                <button id="save-btn" onclick="saveEssay()" class="w-full py-4 mt-6 btn-duo btn-primary text-xl">
+                    تحليل وحفظ الإنشاء
+                </button>
+            </div>
+        </div>
+
+        <!-- شاشة تفاصيل الانشاء (قائمة الاسطر) -->
+        <div id="essay-details-screen" class="hidden flex-1 flex flex-col bg-gray-50 relative">
+            <div class="p-4 bg-white shadow-sm flex items-center z-10 sticky top-0 border-b">
+                <button onclick="showScreen('home-screen')" class="text-gray-500 hover:text-gray-800 p-2 text-xl">
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+                <div class="mr-4 flex-1">
+                    <h2 id="details-title" class="text-xl font-bold text-gray-800">اسم الانشاء</h2>
+                    <div class="flex items-center gap-2 mt-1">
+                        <div class="progress-bar-container flex-1 bg-gray-200 h-2">
+                            <div id="details-progress" class="progress-bar-fill h-2" style="width: 0%;"></div>
+                        </div>
+                        <span id="details-percent" class="text-xs font-bold text-gray-500">0%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-4 flex-1 overflow-y-auto pb-28">
+                <p class="text-sm text-gray-500 mb-4 font-semibold"><i class="fas fa-info-circle"></i> اضغط مطولاً على أي سطر لتحديد مجموعة أسطر لاختبارها معاً.</p>
+                <div id="lines-list" class="space-y-4">
+                    <!-- Lines injected here -->
+                </div>
+            </div>
+
+            <!-- زر الاختبار المتعدد يظهر فقط عند التحديد -->
+            <div id="multi-select-action" class="hidden absolute bottom-6 left-6 right-6 z-20 transition-all duration-300">
+                <button onclick="startMultiSelectionTest()" class="w-full py-4 btn-duo btn-primary text-xl shadow-xl flex items-center justify-center gap-2">
+                    <i class="fas fa-play"></i> بدء اختبار المحدد (<span id="multi-select-count">0</span>)
+                </button>
+            </div>
+        </div>
+
+        <!-- شاشة المراجعة قبل الاختبار -->
+        <div id="review-screen" class="hidden flex-1 flex flex-col bg-white">
+            <div class="p-4 border-b flex items-center justify-between">
+                <button onclick="showScreen('essay-details-screen')" class="text-gray-400 hover:text-gray-600 text-xl">
+                    <i class="fas fa-times"></i>
+                </button>
+                <span class="font-bold text-gray-600">فترة المراجعة والحفظ</span>
+                <div class="w-6"></div>
+            </div>
+            <div class="p-6 flex-1 flex flex-col items-center justify-center text-center">
+                <h3 class="text-xl font-bold text-gray-700 mb-8">اقرأ جيداً واحفظ</h3>
+                
+                <div class="bg-blue-50 border-2 border-blue-100 p-6 rounded-2xl w-full mb-10 shadow-sm overflow-y-auto max-h-[40vh]">
+                    <p id="review-text" class="en-text text-xl font-bold text-blue-900 leading-loose"></p>
+                </div>
+
+                <div id="review-timer" class="timer-circle mb-10">
+                    60
+                </div>
+
+                <button onclick="startTestingPhases()" class="w-full py-4 btn-duo btn-primary text-xl">
+                    حفظته! ابدأ الاختبار الآن
+                </button>
+            </div>
+        </div>
+
+        <!-- شاشة الاختبار (الالعاب) -->
+        <div id="learn-screen" class="hidden flex-1 flex flex-col bg-white h-screen">
+            <div class="p-4 flex items-center gap-4 border-b">
+                <button onclick="confirmExitLesson()" class="text-gray-400 hover:text-gray-600 text-2xl">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="flex-1">
+                    <div class="flex justify-between text-xs font-bold text-gray-400 mb-1">
+                        <span id="phase-title">الترتيب</span>
+                        <span id="phase-counter">1/4</span>
+                    </div>
+                    <div class="progress-bar-container h-3">
+                        <div id="lesson-progress" class="progress-bar-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 flex-1 flex flex-col overflow-y-auto">
+                <h2 id="question-title" class="text-2xl font-bold mb-6 text-gray-800 text-center">رتب الجملة:</h2>
+                
+                <!-- منطقة العمل (ترتيب او كتابة) -->
+                <div id="target-area" class="target-slot mb-8 en-text bg-gray-50 rounded-xl min-h-[100px] border-2 border-dashed border-gray-300 p-4">
+                    <!-- Slots / Inputs injected here -->
+                </div>
+
+                <!-- بنك الكلمات للترتيب -->
+                <div id="word-bank" class="flex flex-wrap justify-center gap-2 en-text mt-auto mb-4">
+                    <!-- Chips injected here -->
+                </div>
+            </div>
+
+            <!-- الفوتر -->
+            <div id="lesson-footer" class="p-6 border-t flex flex-col justify-end bg-white transition-colors duration-300">
+                <div id="feedback-message" class="hidden font-bold text-lg mb-4 flex flex-col items-center gap-2 text-center"></div>
+                <button id="check-btn" onclick="checkAnswer()" class="w-full py-4 btn-duo btn-primary text-xl">
+                    تحقق
+                </button>
+            </div>
+        </div>
+
+        <!-- شاشة نتيجة السطر -->
+        <div id="result-screen" class="hidden flex-1 flex flex-col items-center justify-center bg-white p-6 text-center">
+            <div id="result-icon" class="w-32 h-32 rounded-full flex items-center justify-center text-6xl mb-6 shadow-lg">
+                <!-- Icon -->
+            </div>
+            <h2 id="result-title" class="text-3xl font-bold text-gray-800 mb-2">النتيجة</h2>
+            <p id="result-desc" class="text-gray-600 mb-8 text-lg">الوصف</p>
+            
+            <div class="w-full bg-gray-50 rounded-2xl p-4 mb-8 flex justify-around">
+                <div class="text-center">
+                    <p class="text-sm text-gray-500 font-bold mb-1">دقة الحفظ</p>
+                    <p id="result-accuracy" class="text-2xl font-bold text-blue-600">0%</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-sm text-gray-500 font-bold mb-1">الأخطاء</p>
+                    <p id="result-mistakes" class="text-2xl font-bold text-red-500">0</p>
+                </div>
+            </div>
+
+            <button id="result-action-btn" class="w-full py-4 btn-duo text-xl">
+                متابعة
+            </button>
+        </div>
+
+        <!-- Modal الترجمة -->
+        <div id="translation-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+            <div class="bg-white rounded-3xl p-6 w-full max-w-sm relative shadow-2xl transform scale-100 transition-transform">
+                <button onclick="closeTranslationModal()" class="absolute top-4 left-4 text-gray-400 hover:text-red-500 transition-colors bg-gray-50 w-8 h-8 rounded-full flex items-center justify-center">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="flex items-center gap-3 mb-4 border-b pb-4">
+                    <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xl">
+                        <i class="fas fa-language"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800">الترجمة الدقيقة</h3>
+                </div>
+                <div id="translation-content" class="min-h-[80px] flex items-center justify-center text-gray-700 text-lg font-medium text-center leading-relaxed">
+                    <!-- سيتم حقن الترجمة هنا -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyA2Qpx0BaIAkkVgIiSUDVOLxoWADNxFOsw",
+            authDomain: "construction-c7b07.firebaseapp.com",
+            projectId: "construction-c7b07",
+            storageBucket: "construction-c7b07.firebasestorage.app",
+            messagingSenderId: "647520392819",
+            appId: "1:647520392819:web:852651cad725c0dca1bc06",
+            measurementId: "G-G140TYYLCK"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        let currentUser = null;
+        let isOfflineMode = false;
+
+        // Reversed API Key logic for AI as requested
+        const RAW_KEY = "4risF3DfN3HoDirKl-x3QaPzK_Ys5G_fAySazIA";
+        const AI_API_KEY = RAW_KEY.split('').reverse().join('');
+
+        // App State
+        let essaysList = [];
+        let currentEssay = null;
+        let currentTestedIndices = []; // يحتفظ بأرقام السطور التي يتم اختبارها
+        let selectedLinesForTest = new Set(); // قائمة للسطور المحددة للامتحان المتعدد
+        
+        let studySession = {
+            lineText: "",
+            words: [],
+            phases: [],
+            currentPhaseIndex: 0,
+            mistakes: 0,
+            totalActions: 0,
+            currentState: 'playing', // playing, correct, wrong
+            timerInterval: null
+        };
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                isOfflineMode = false;
+                await loadEssaysFromDB();
+                showScreen('home-screen');
+            } else {
+                signInAnonymously(auth).catch((error) => {
+                    console.warn("استخدام التخزين المحلي (Offline Mode)");
+                    isOfflineMode = true;
+                    currentUser = { uid: 'local_user' };
+                    loadEssaysFromLocal();
+                    showScreen('home-screen');
+                });
+            }
+        });
+
+        function loadEssaysFromLocal() {
+            const local = localStorage.getItem('localEssaysAI');
+            essaysList = local ? JSON.parse(local) : [];
+            renderEssaysList();
+        }
+
+        async function loadEssaysFromDB() {
+            try {
+                if (isOfflineMode) return loadEssaysFromLocal();
+                essaysList = [];
+                const q = query(collection(db, `users/${currentUser.uid}/essays_ai`), orderBy("createdAt", "desc"));
+                const querySnapshot = await getDocs(q);
+                querySnapshot.forEach((doc) => {
+                    essaysList.push({ id: doc.id, ...doc.data() });
+                });
+                renderEssaysList();
+            } catch (e) {
+                loadEssaysFromLocal();
+            }
+        }
+
+        function saveLocalFallback() {
+            localStorage.setItem('localEssaysAI', JSON.stringify(essaysList));
+        }
+
+        window.showScreen = function(screenId) {
+            document.querySelectorAll('#app > div:not(#translation-modal)').forEach(el => el.classList.add('hidden'));
+            document.getElementById(screenId).classList.remove('hidden');
+            document.getElementById(screenId).classList.add('flex');
+            
+            if (screenId !== 'review-screen') clearInterval(studySession.timerInterval);
+        }
+
+        function renderEssaysList() {
+            const container = document.getElementById('essays-list');
+            container.innerHTML = '';
+
+            // 1. إضافة بانر التليجرام دائماً في البداية
+            const tgBanner = document.createElement('a');
+            tgBanner.href = "https://t.me/SO_S_7";
+            tgBanner.target = "_blank";
+            tgBanner.className = "block bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl p-4 mb-6 shadow-md cursor-pointer active:scale-95 transition-transform text-white";
+            tgBanner.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-white text-blue-500 rounded-full flex items-center justify-center text-3xl shadow-sm">
+                            <i class="fab fa-telegram-plane"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg mb-1">انضم لقناتنا على تليكرام</h3>
+                            <p class="text-sm text-blue-100 font-semibold leading-tight">الحصول الانشائات كنص قابل للنسخ للاستخدام</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-left bg-white/20 p-2 rounded-full text-sm"></i>
+                </div>
+            `;
+            container.appendChild(tgBanner);
+
+            // 2. التحقق من وجود انشاءات
+            if (essaysList.length === 0) {
+                container.innerHTML += `
+                    <div class="text-center text-gray-500 mt-10">
+                        <i class="fas fa-folder-open text-5xl mb-4 opacity-50"></i>
+                        <p class="text-lg">لم تقم بإضافة أي انشاء بعد.<br>اضغط على + للبدء.</p>
+                    </div>`;
+                return;
+            }
+
+            // 3. عرض الانشاءات
+            essaysList.forEach((essay, index) => {
+                const totalLines = essay.lines.length;
+                const completed = essay.lines.filter(l => l.completed).length;
+                const progress = totalLines === 0 ? 0 : Math.round((completed / totalLines) * 100);
+                
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl p-4 shadow-sm border border-gray-100 cursor-pointer active:scale-95 transition-transform relative overflow-hidden";
+                card.onclick = () => openEssay(essay.id);
+                
+                const icons = ['fa-graduation-cap', 'fa-book', 'fa-school', 'fa-pencil-alt', 'fa-laptop-code'];
+                const icon = icons[index % icons.length];
+
+                card.innerHTML = `
+                    <div class="flex items-center gap-4 mb-3">
+                        <div class="w-14 h-14 rounded-xl flex items-center justify-center text-2xl bg-blue-50 text-blue-500">
+                            <i class="fas ${icon}"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-bold text-gray-800 text-lg">${essay.title}</h3>
+                            <p class="text-xs text-gray-500">${totalLines} أسطر • ${completed} مكتمل</p>
+                        </div>
+                        <button onclick="event.stopPropagation(); deleteEssay('${essay.id}')" class="w-10 h-10 flex items-center justify-center text-gray-300 hover:text-red-500 rounded-full transition-colors">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                    <!-- Progress line -->
+                    <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden flex items-center">
+                        <div class="h-full bg-green-500 rounded-full transition-all duration-500" style="width: ${progress}%"></div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        async function processEssayWithAI(text) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${AI_API_KEY}`;
+            const prompt = `أنت خبير في تعليم اللغة الإنجليزية. قم بتقسيم هذا الإنشاء إلى جمل أو أسطر قصيرة ومترابطة المعنى (حوالي 4 إلى 10 كلمات لكل سطر) لتسهيل حفظها على الطلاب. 
+التعليمات:
+1. حافظ على كل كلمات النص الأصلي دون حذف أي كلمة.
+2. لا تغير ترتيب الكلمات.
+3. أرجع النتيجة كـ JSON Array من النصوص (Strings) فقط.
+4. لا تضف أي نص إضافي أو شروحات أو علامات Markdown خارج الـ JSON.
+
+النص:
+${text}`;
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }],
+                        generationConfig: { responseMimeType: "application/json" }
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.candidates && data.candidates[0].content) {
+                    let jsonStr = data.candidates[0].content.parts[0].text;
+                    jsonStr = jsonStr.replace(/```json/g, '').replace(/```/g, '').trim();
+                    const lines = JSON.parse(jsonStr);
+                    return lines.map(line => ({
+                        text: line.trim(),
+                        completed: false,
+                        bestAccuracy: 0
+                    }));
+                }
+            } catch (e) {
+                console.error("AI Split failed", e);
+            }
+            
+            const rawLines = text.match(/[^.?!]+[.?!]+/g) || [text];
+            return rawLines.map(line => ({
+                text: line.trim(),
+                completed: false,
+                bestAccuracy: 0
+            })).filter(l => l.text.length > 2);
+        }
+
+        window.saveEssay = async function() {
+            const title = document.getElementById('essay-title').value.trim();
+            const content = document.getElementById('essay-content').value.trim();
+            const btn = document.getElementById('save-btn');
+
+            if (!title || !content) return alert('يرجى ادخال الاسم والنص');
+
+            btn.innerHTML = '<i class="fas fa-robot fa-spin"></i> الذكاء الاصطناعي يقوم بالتقسيم...';
+            btn.disabled = true;
+
+            try {
+                const lines = await processEssayWithAI(content);
+                if(!lines || lines.length === 0) throw new Error("Failed to split");
+
+                let newId = Date.now().toString();
+                const essayData = { title, content, lines, createdAt: isOfflineMode ? Date.now() : serverTimestamp() };
+
+                if (!isOfflineMode) {
+                    const docRef = await addDoc(collection(db, `users/${currentUser.uid}/essays_ai`), essayData);
+                    newId = docRef.id;
+                }
+
+                essaysList.unshift({ id: newId, ...essayData });
+                saveLocalFallback();
+                
+                document.getElementById('essay-title').value = '';
+                document.getElementById('essay-content').value = '';
+                
+                renderEssaysList();
+                openEssay(newId); 
+            } catch (e) {
+                console.error(e);
+                alert("حدث خطأ أثناء معالجة النص. تأكد من اتصال الانترنت.");
+            } finally {
+                btn.innerHTML = 'تحليل وحفظ الإنشاء';
+                btn.disabled = false;
+            }
+        }
+
+        window.deleteEssay = async function(id) {
+            if (confirm("هل انت متأكد من حذف هذا الانشاء؟")) {
+                try {
+                    if (!isOfflineMode) await deleteDoc(doc(db, `users/${currentUser.uid}/essays_ai`, id));
+                    essaysList = essaysList.filter(e => e.id !== id);
+                    saveLocalFallback();
+                    renderEssaysList();
+                } catch (e) { console.error(e); }
+            }
+        }
+
+        window.openEssay = function(essayId) {
+            currentEssay = essaysList.find(e => e.id === essayId);
+            if (!currentEssay) return;
+            selectedLinesForTest.clear(); // تفريغ التحديدات
+            updateMultiSelectUI();
+
+            document.getElementById('details-title').textContent = currentEssay.title;
+            updateEssayProgressUI();
+
+            const listContainer = document.getElementById('lines-list');
+            listContainer.innerHTML = '';
+
+            currentEssay.lines.forEach((line, index) => {
+                const item = document.createElement('div');
+                item.id = `line-item-${index}`;
+                item.className = `line-item p-4 bg-white rounded-xl border-2 cursor-pointer shadow-sm ${line.completed ? 'completed border-gray-200' : 'border-gray-200 hover:border-blue-300'}`;
+                
+                // أحداث الضغط المطول والنقر
+                let pressTimer;
+                let isDragging = false;
+                
+                item.addEventListener('touchstart', () => {
+                    isDragging = false;
+                    pressTimer = setTimeout(() => { handleLineSelection(index); }, 500);
+                });
+                item.addEventListener('touchmove', () => { isDragging = true; clearTimeout(pressTimer); });
+                item.addEventListener('touchend', () => { clearTimeout(pressTimer); });
+                
+                item.addEventListener('mousedown', () => {
+                    isDragging = false;
+                    pressTimer = setTimeout(() => { handleLineSelection(index); }, 500);
+                });
+                item.addEventListener('mousemove', () => { isDragging = true; clearTimeout(pressTimer); });
+                item.addEventListener('mouseup', () => { clearTimeout(pressTimer); });
+                item.addEventListener('mouseleave', () => { clearTimeout(pressTimer); });
+                
+                // منع ظهور قائمة السياق عند الضغط المطول
+                item.addEventListener('contextmenu', (e) => e.preventDefault());
+
+                item.onclick = (e) => {
+                    // إذا ضغطنا على زر داخل العنصر لا نفعل شيء للكارت
+                    if(e.target.closest('button')) return;
+                    
+                    if (isDragging) return;
+                    clearTimeout(pressTimer);
+                    
+                    // إذا كنا في وضع التحديد، النقر العادي يحدد فقط
+                    if (selectedLinesForTest.size > 0) {
+                        handleLineSelection(index);
+                    } else {
+                        // بدء الدراسة للسطر الواحد
+                        startStudySession([index]);
+                    }
+                };
+                
+                // تنظيف النص للاستخدام في دوال الازرار
+                const safeText = line.text.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+
+                item.innerHTML = `
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex-1 mr-4">
+                            <span class="text-xs font-bold text-gray-400 mb-1 block">سطر ${index + 1}</span>
+                            <p class="en-text text-lg font-semibold leading-relaxed">${line.text}</p>
+                        </div>
+                        <div id="status-icon-${index}" class="w-10 h-10 rounded-full flex items-center justify-center text-xl transition-colors ${line.completed ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'}">
+                            <i class="fas ${line.completed ? 'fa-check' : 'fa-play'}"></i>
+                        </div>
+                    </div>
+                    <!-- أزرار الإجراءات (استماع / ترجمة) -->
+                    <div class="flex gap-2 border-t pt-3 mt-1">
+                        <button onclick="playAudio('${safeText}')" class="flex-1 py-2 bg-blue-50 text-blue-600 rounded-lg text-sm font-bold hover:bg-blue-100 transition-colors flex items-center justify-center gap-2">
+                            <i class="fas fa-volume-up"></i> استماع
+                        </button>
+                        <button onclick="showTranslation('${safeText}')" class="flex-1 py-2 bg-purple-50 text-purple-600 rounded-lg text-sm font-bold hover:bg-purple-100 transition-colors flex items-center justify-center gap-2">
+                            <i class="fas fa-language"></i> ترجمة
+                        </button>
+                    </div>
+                `;
+                listContainer.appendChild(item);
+            });
+
+            showScreen('essay-details-screen');
+        }
+
+        // تحديث شريط الإنجاز في تفاصيل الانشاء
+        function updateEssayProgressUI() {
+            if(!currentEssay) return;
+            const totalLines = currentEssay.lines.length;
+            const completedLines = currentEssay.lines.filter(l => l.completed).length;
+            const progress = totalLines === 0 ? 0 : Math.round((completedLines / totalLines) * 100);
+            
+            document.getElementById('details-progress').style.width = `${progress}%`;
+            document.getElementById('details-percent').textContent = `${progress}%`;
+        }
+
+        // --- الميزات الجديدة: الصوت والترجمة والتحديد المتعدد ---
+
+        window.playAudio = function(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // إيقاف أي صوت سابق
+                const msg = new SpeechSynthesisUtterance(text);
+                msg.lang = 'en-US';
+                msg.rate = 0.9; // سرعة جيدة للطلاب
+                window.speechSynthesis.speak(msg);
+            } else {
+                alert("متصفحك لا يدعم خاصية النطق الصوتي.");
+            }
+        }
+
+        window.showTranslation = async function(text) {
+            const modal = document.getElementById('translation-modal');
+            const contentBox = document.getElementById('translation-content');
+            
+            // فتح المودال بحالة التحميل
+            modal.classList.remove('hidden');
+            contentBox.innerHTML = '<i class="fas fa-spinner fa-spin text-2xl text-blue-500"></i><span class="mr-2">جاري الترجمة...</span>';
+
+            // الاتصال بالـ API للترجمة
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${AI_API_KEY}`;
+            const prompt = `ترجم هذه الجملة الإنجليزية إلى العربية بشكل دقيق جداً للمناهج الدراسية، أرسل الترجمة فقط بدون أي إضافات:\n${text}`;
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+                const data = await response.json();
+                if (data.candidates && data.candidates[0].content) {
+                    const translation = data.candidates[0].content.parts[0].text.trim();
+                    contentBox.innerHTML = `<p>${translation}</p>`;
+                } else {
+                    contentBox.innerHTML = '<span class="text-red-500">حدث خطأ في الترجمة.</span>';
+                }
+            } catch (e) {
+                contentBox.innerHTML = '<span class="text-red-500">لا يوجد اتصال بالإنترنت للترجمة.</span>';
+            }
+        }
+
+        window.closeTranslationModal = function() {
+            document.getElementById('translation-modal').classList.add('hidden');
+        }
+
+        function handleLineSelection(index) {
+            const item = document.getElementById(`line-item-${index}`);
+            const iconBox = document.getElementById(`status-icon-${index}`);
+            
+            if (selectedLinesForTest.has(index)) {
+                selectedLinesForTest.delete(index);
+                item.classList.remove('selected-multi');
+                iconBox.innerHTML = currentEssay.lines[index].completed ? '<i class="fas fa-check"></i>' : '<i class="fas fa-play"></i>';
+                iconBox.className = `w-10 h-10 rounded-full flex items-center justify-center text-xl transition-colors ${currentEssay.lines[index].completed ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'}`;
+            } else {
+                selectedLinesForTest.add(index);
+                item.classList.add('selected-multi');
+                iconBox.innerHTML = '<i class="fas fa-check-square"></i>';
+                iconBox.className = 'w-10 h-10 rounded-full flex items-center justify-center text-xl transition-colors bg-blue-500 text-white shadow-md';
+            }
+            updateMultiSelectUI();
+        }
+
+        function updateMultiSelectUI() {
+            const multiBtn = document.getElementById('multi-select-action');
+            if (selectedLinesForTest.size > 0) {
+                document.getElementById('multi-select-count').textContent = selectedLinesForTest.size;
+                multiBtn.classList.remove('hidden');
+            } else {
+                multiBtn.classList.add('hidden');
+            }
+        }
+
+        window.startMultiSelectionTest = function() {
+            if(selectedLinesForTest.size === 0) return;
+            const indices = Array.from(selectedLinesForTest).sort((a,b) => a - b);
+            startStudySession(indices);
+        }
+
+        // --- تعديل دالة بدء الدراسة لتدعم سطر أو عدة سطور ---
+        window.startStudySession = function(indices) {
+            currentTestedIndices = indices;
+            
+            // دمج النص المحدد
+            const combinedText = indices.map(i => currentEssay.lines[i].text.trim()).join(' ');
+            const words = combinedText.split(/\s+/).filter(w => w.length > 0);
+            
+            if(words.length === 0) return alert("النص فارغ!");
+
+            let phases = [];
+            
+            // إذا كانت الكلمات كثيرة جداً، لا نضع الترتيب الأول لأنه سيأخذ مساحة الشاشة بالكامل
+            if (words.length <= 15) {
+                phases.push({ title: 'ترتيب الكلمات', type: 'order', scrambleId: 1 });
+            }
+
+            // كتابة متدرجة
+            const chunkSize = words.length > 15 ? 3 : 2; // نزيد الحجم اذا كانت الجملة طويلة
+            for (let i = 0; i < words.length; i += chunkSize) {
+                let hiddenIndices = [];
+                for(let j=0; j<chunkSize && (i+j)<words.length; j++){
+                    hiddenIndices.push(i+j);
+                }
+                phases.push({ title: 'أكمل الفراغات', type: 'type', hidden: hiddenIndices });
+            }
+
+            // الاختبار الشامل
+            let mixedHidden = [];
+            let mixedChips = [];
+            words.forEach((_, idx) => {
+                if (Math.random() > 0.5) mixedHidden.push(idx);
+                else mixedChips.push(idx);
+            });
+            if (words.length >= 2) {
+                if (mixedHidden.length === 0) { mixedHidden.push(0); mixedChips.shift(); }
+                if (mixedChips.length === 0) { mixedChips.push(0); mixedHidden.shift(); }
+            }
+            phases.push({ title: 'الاختبار الشامل', type: 'mixed', hidden: mixedHidden, chips: mixedChips });
+
+            studySession = {
+                lineText: combinedText,
+                words: words,
+                phases: phases,
+                currentPhaseIndex: 0,
+                mistakes: 0,
+                totalActions: 0,
+                currentState: 'playing',
+                timerInterval: null
+            };
+
+            showReviewScreen();
+        }
+
+        // ---------------------------------------------
+        // بقية دوال اللعبة والاختبار كما هي بدون تغيير جوهري
+        // ---------------------------------------------
+
+        function showReviewScreen() {
+            document.getElementById('review-text').textContent = studySession.lineText;
+            showScreen('review-screen');
+            
+            let timeLeft = 60;
+            const timerEl = document.getElementById('review-timer');
+            timerEl.textContent = timeLeft;
+            timerEl.style.borderColor = '#e5e5e5';
+            timerEl.style.borderTopColor = 'var(--primary)';
+            
+            clearInterval(studySession.timerInterval);
+            studySession.timerInterval = setInterval(() => {
+                timeLeft--;
+                timerEl.textContent = timeLeft;
+                if(timeLeft <= 10) timerEl.style.borderTopColor = 'var(--error)';
+                
+                if(timeLeft <= 0) {
+                    clearInterval(studySession.timerInterval);
+                    startTestingPhases();
+                }
+            }, 1000);
+        }
+
+        window.startTestingPhases = function() {
+            clearInterval(studySession.timerInterval);
+            showScreen('learn-screen');
+            loadPhase();
+        }
+
+        function loadPhase() {
+            if (studySession.currentPhaseIndex >= studySession.phases.length) {
+                finishLineStudy();
+                return;
+            }
+
+            const phase = studySession.phases[studySession.currentPhaseIndex];
+            const words = studySession.words;
+            studySession.currentState = 'playing';
+            
+            document.getElementById('phase-title').textContent = phase.title;
+            document.getElementById('phase-counter').textContent = `${studySession.currentPhaseIndex + 1} / ${studySession.phases.length}`;
+            const progress = (studySession.currentPhaseIndex / studySession.phases.length) * 100;
+            document.getElementById('lesson-progress').style.width = `${progress}%`;
+
+            const targetArea = document.getElementById('target-area');
+            const wordBank = document.getElementById('word-bank');
+            targetArea.innerHTML = '';
+            wordBank.innerHTML = '';
+            
+            resetFooter();
+
+            if (phase.type === 'order') {
+                document.getElementById('question-title').textContent = "رتب الجملة:";
+                words.forEach((w, i) => {
+                    const slot = document.createElement('div');
+                    slot.className = 'word-chip-slot';
+                    slot.dataset.index = i;
+                    slot.dataset.expected = w;
+                    slot.onclick = () => removeChipFromSlot(slot);
+                    targetArea.appendChild(slot);
+                    studySession.totalActions++;
+                });
+
+                let scrambled = [...words].map((w, i) => ({text: w, id: i}));
+                scrambled.sort(() => Math.random() - 0.5);
+                if(phase.scrambleId === 2) scrambled.reverse(); 
+
+                scrambled.forEach(item => {
+                    const chip = document.createElement('div');
+                    chip.className = 'word-chip';
+                    chip.textContent = item.text;
+                    chip.dataset.id = item.id;
+                    chip.onclick = () => addChipToFirstEmptySlot(chip);
+                    wordBank.appendChild(chip);
+                });
+
+            } 
+            else if (phase.type === 'type') {
+                document.getElementById('question-title').textContent = "اكتب الكلمات الناقصة:";
+                words.forEach((w, i) => {
+                    if (phase.hidden.includes(i)) {
+                        const inp = document.createElement('input');
+                        inp.type = 'text';
+                        inp.className = 'type-input';
+                        inp.dataset.expected = w;
+                        inp.setAttribute('autocapitalize', 'none');
+                        inp.setAttribute('autocomplete', 'off');
+                        inp.oninput = checkInputsRealtime;
+                        targetArea.appendChild(inp);
+                        studySession.totalActions++;
+                    } else {
+                        const span = document.createElement('span');
+                        span.className = 'text-xl font-bold mx-1 py-2 text-gray-700';
+                        span.textContent = w;
+                        targetArea.appendChild(span);
+                    }
+                });
+                setTimeout(() => {
+                    const firstInput = targetArea.querySelector('input');
+                    if(firstInput) firstInput.focus();
+                }, 300);
+            }
+            else if (phase.type === 'mixed') {
+                document.getElementById('question-title').textContent = "رتب واكتب (الاختبار الشامل):";
+                let chipsData = [];
+
+                words.forEach((w, i) => {
+                    if (phase.hidden.includes(i)) {
+                        const inp = document.createElement('input');
+                        inp.type = 'text';
+                        inp.className = 'type-input';
+                        inp.dataset.expected = w;
+                        inp.setAttribute('autocapitalize', 'none');
+                        inp.setAttribute('autocomplete', 'off');
+                        inp.oninput = checkInputsRealtime;
+                        targetArea.appendChild(inp);
+                        studySession.totalActions++;
+                    } else if (phase.chips.includes(i)) {
+                        const slot = document.createElement('div');
+                        slot.className = 'word-chip-slot';
+                        slot.dataset.index = i;
+                        slot.dataset.expected = w;
+                        slot.onclick = () => removeChipFromSlot(slot);
+                        targetArea.appendChild(slot);
+                        
+                        chipsData.push({text: w, id: i});
+                        studySession.totalActions++;
+                    } else {
+                        const span = document.createElement('span');
+                        span.className = 'text-xl font-bold mx-1 py-2 text-gray-700';
+                        span.textContent = w;
+                        targetArea.appendChild(span);
+                    }
+                });
+
+                chipsData.sort(() => Math.random() - 0.5).forEach(item => {
+                    const chip = document.createElement('div');
+                    chip.className = 'word-chip';
+                    chip.textContent = item.text;
+                    chip.dataset.id = item.id;
+                    chip.onclick = () => addChipToFirstEmptySlot(chip);
+                    wordBank.appendChild(chip);
+                });
+            }
+            
+            checkBtnState();
+        }
+
+        window.addChipToFirstEmptySlot = function(chipElement) {
+            if (studySession.currentState !== 'playing') return;
+            const slots = document.querySelectorAll('.word-chip-slot:not(.filled)');
+            if (slots.length > 0) {
+                const slot = slots[0];
+                slot.textContent = chipElement.textContent;
+                slot.dataset.chipId = chipElement.dataset.id;
+                slot.classList.add('filled');
+                chipElement.classList.add('selected'); 
+            }
+            checkBtnState();
+        }
+
+        window.removeChipFromSlot = function(slotElement) {
+            if (studySession.currentState !== 'playing' || !slotElement.classList.contains('filled')) return;
+            
+            const chipId = slotElement.dataset.chipId;
+            const chipElement = document.querySelector(`.word-chip[data-id="${chipId}"]`);
+            if (chipElement) chipElement.classList.remove('selected');
+            
+            slotElement.textContent = '';
+            slotElement.classList.remove('filled');
+            delete slotElement.dataset.chipId;
+            
+            checkBtnState();
+        }
+
+        function checkInputsRealtime() {
+            if(studySession.currentState !== 'playing') return;
+            checkBtnState();
+        }
+
+        function checkBtnState() {
+            const btn = document.getElementById('check-btn');
+            if (studySession.currentState !== 'playing') {
+                btn.disabled = false;
+                return;
+            }
+
+            const emptySlots = document.querySelectorAll('.word-chip-slot:not(.filled)');
+            const emptyInputs = Array.from(document.querySelectorAll('.type-input')).some(inp => inp.value.trim() === '');
+            
+            if (emptySlots.length === 0 && !emptyInputs) {
+                btn.disabled = false;
+                btn.className = 'w-full py-4 btn-duo btn-primary text-xl';
+            } else {
+                btn.disabled = true;
+                btn.className = 'w-full py-4 btn-duo btn-primary text-xl disabled:opacity-50 bg-gray-200 text-gray-400 box-shadow-none';
+                btn.style.boxShadow = "none";
+            }
+        }
+
+        const cleanWord = (w) => w.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+        window.checkAnswer = function() {
+            const btn = document.getElementById('check-btn');
+            
+            if (studySession.currentState === 'correct') {
+                studySession.currentPhaseIndex++;
+                loadPhase();
+                return;
+            }
+            if (studySession.currentState === 'wrong') {
+                loadPhase(); 
+                return;
+            }
+
+            let isAllCorrect = true;
+            let phaseMistakes = 0;
+
+            document.querySelectorAll('.word-chip-slot').forEach(slot => {
+                const expected = cleanWord(slot.dataset.expected);
+                const actual = cleanWord(slot.textContent);
+                if (expected !== actual) {
+                    isAllCorrect = false;
+                    slot.style.borderColor = 'var(--error)';
+                    slot.style.backgroundColor = '#fef2f2';
+                    slot.style.color = 'var(--error)';
+                    phaseMistakes++;
+                } else {
+                    slot.style.borderColor = 'var(--success)';
+                    slot.style.backgroundColor = '#f0fdf4';
+                    slot.style.color = 'var(--success-shadow)';
+                }
+            });
+
+            document.querySelectorAll('.type-input').forEach(inp => {
+                const expected = cleanWord(inp.dataset.expected);
+                const actual = cleanWord(inp.value);
+                if (expected !== actual) {
+                    isAllCorrect = false;
+                    inp.classList.add('wrong');
+                    inp.classList.remove('correct');
+                    phaseMistakes++;
+                } else {
+                    inp.classList.add('correct');
+                    inp.classList.remove('wrong');
+                    inp.readOnly = true;
+                }
+            });
+
+            const footer = document.getElementById('lesson-footer');
+            const msg = document.getElementById('feedback-message');
+
+            if (isAllCorrect) {
+                studySession.currentState = 'correct';
+                footer.className = 'p-6 border-t flex flex-col justify-end bg-green-100 transition-colors duration-300';
+                msg.innerHTML = '<div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white text-2xl"><i class="fas fa-check"></i></div> <span class="text-green-700">عمل رائع!</span>';
+                msg.classList.remove('hidden');
+                
+                btn.className = 'w-full py-4 btn-duo btn-success text-xl';
+                btn.textContent = 'المتابعة';
+            } else {
+                studySession.currentState = 'wrong';
+                studySession.mistakes += phaseMistakes; 
+                
+                document.getElementById('target-area').classList.add('shake-animation');
+                setTimeout(() => document.getElementById('target-area').classList.remove('shake-animation'), 400);
+
+                footer.className = 'p-6 border-t flex flex-col justify-end bg-red-50 transition-colors duration-300';
+                msg.innerHTML = `
+                    <div class="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center text-white text-2xl"><i class="fas fa-times"></i></div> 
+                    <span class="text-red-700">يوجد أخطاء! ركز جيداً</span>
+                    <div class="text-sm text-red-600 bg-red-100 px-3 py-1 rounded-lg mt-2 en-text">${studySession.lineText}</div>
+                `;
+                msg.classList.remove('hidden');
+                
+                btn.className = 'w-full py-4 btn-duo btn-error text-xl';
+                btn.textContent = 'أعد المحاولة';
+            }
+        }
+
+        function resetFooter() {
+            const footer = document.getElementById('lesson-footer');
+            const msg = document.getElementById('feedback-message');
+            const btn = document.getElementById('check-btn');
+            
+            footer.className = 'p-6 border-t flex flex-col justify-end bg-white';
+            msg.classList.add('hidden');
+            checkBtnState(); 
+            btn.textContent = 'تحقق';
+        }
+
+        async function finishLineStudy() {
+            let errorRate = 0;
+            if (studySession.totalActions > 0) {
+                errorRate = (studySession.mistakes / studySession.totalActions) * 100;
+            }
+            const accuracy = Math.max(0, 100 - errorRate);
+            const isSuccess = errorRate <= 25;
+
+            // تطبيق النتيجة على كافة السطور التي تم اختبارها
+            if (isSuccess) {
+                currentTestedIndices.forEach(idx => {
+                    const line = currentEssay.lines[idx];
+                    line.completed = true;
+                    line.bestAccuracy = Math.max(line.bestAccuracy || 0, Math.round(accuracy));
+                });
+            }
+
+            if (!isOfflineMode) {
+                try {
+                    await updateDoc(doc(db, `users/${currentUser.uid}/essays_ai`, currentEssay.id), {
+                        lines: currentEssay.lines
+                    });
+                } catch (e) { console.error("Update DB failed", e); }
+            }
+            saveLocalFallback();
+            
+            // تحديث الواجهة الرئيسية في الخلفية لتحديث الشريط فوراً
+            renderEssaysList();
+
+            showScreen('result-screen');
+            
+            const icon = document.getElementById('result-icon');
+            const title = document.getElementById('result-title');
+            const desc = document.getElementById('result-desc');
+            const accEl = document.getElementById('result-accuracy');
+            const mistEl = document.getElementById('result-mistakes');
+            const btn = document.getElementById('result-action-btn');
+
+            accEl.textContent = `${Math.round(accuracy)}%`;
+            mistEl.textContent = studySession.mistakes;
+
+            if (isSuccess) {
+                icon.className = "w-32 h-32 rounded-full flex items-center justify-center text-6xl mb-6 shadow-lg bg-green-100 text-green-500";
+                icon.innerHTML = '<i class="fas fa-crown"></i>';
+                title.textContent = "عبقري!";
+                title.className = "text-3xl font-bold text-green-600 mb-2";
+                desc.textContent = "لقد حفظت النص بنجاح.";
+                btn.className = "w-full py-4 btn-duo btn-success text-xl";
+                btn.textContent = "العودة للقائمة";
+                btn.onclick = () => openEssay(currentEssay.id);
+            } else {
+                icon.className = "w-32 h-32 rounded-full flex items-center justify-center text-6xl mb-6 shadow-lg bg-orange-100 text-orange-500";
+                icon.innerHTML = '<i class="fas fa-brain"></i>';
+                title.textContent = "يحتاج تركيز أكثر";
+                title.className = "text-3xl font-bold text-orange-600 mb-2";
+                desc.textContent = "أخطاؤك تجاوزت 25%. الإعادة تصنع الإتقان!";
+                btn.className = "w-full py-4 btn-duo btn-warning text-xl text-white";
+                btn.textContent = "إعادة الاختبار";
+                btn.onclick = () => startStudySession(currentTestedIndices);
+            }
+        }
+
+        window.confirmExitLesson = function() {
+            if (confirm("هل انت متأكد من الخروج؟ سيتم فقدان تقدمك في هذا الاختبار.")) {
+                openEssay(currentEssay.id);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -5,13 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>حفظ الانشاءات الوزارية (AI)</title>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 
     <style>
@@ -222,23 +217,20 @@
 
     <div id="app" class="app-container flex flex-col relative h-[100dvh]">
         
-        <!-- شاشة التحميل -->
         <div id="loading-screen" class="flex-1 flex flex-col items-center justify-center">
             <i class="fas fa-circle-notch fa-spin text-3xl text-blue-500 mb-3"></i>
             <h2 class="text-lg font-bold">جاري التهيئة...</h2>
         </div>
 
-        <!-- الشاشة الرئيسية -->
         <div id="home-screen" class="hidden flex-1 flex flex-col bg-gray-50 h-full">
             <div class="p-4 bg-white shadow-sm flex justify-between items-center z-10 sticky top-0">
-                <h1 class="text-xl font-bold text-gray-800">انشاءاتي الوزارية</h1>
+                <h1 class="text-xl font-bold text-gray-800 cursor-pointer hover:text-blue-600 transition-colors" onclick="handleHeaderClick()">انشاءاتي</h1>
                 <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-sm">
                     <i class="fas fa-brain"></i>
                 </div>
             </div>
             
             <div id="essays-list" class="flex-1 p-3 overflow-y-auto pb-20 space-y-3">
-                <!-- سيتم حقن الانشاءات هنا -->
             </div>
 
             <button onclick="showScreen('add-screen')" class="absolute bottom-4 left-4 w-14 h-14 bg-blue-500 text-white rounded-2xl shadow-lg flex items-center justify-center text-2xl hover:bg-blue-600 transition-colors btn-primary" style="border-radius: 16px;">
@@ -246,7 +238,6 @@
             </button>
         </div>
 
-        <!-- شاشة اضافة انشاء جديد -->
         <div id="add-screen" class="hidden flex-1 flex flex-col bg-white h-full">
             <div class="p-3 border-b flex items-center">
                 <button onclick="showScreen('home-screen')" class="text-gray-500 hover:text-gray-800 p-2 text-lg">
@@ -272,7 +263,6 @@
             </div>
         </div>
 
-        <!-- شاشة تفاصيل الانشاء (قائمة الاسطر) -->
         <div id="essay-details-screen" class="hidden flex-1 flex flex-col bg-gray-50 relative h-full">
             <div class="p-3 bg-white shadow-sm flex items-center z-10 sticky top-0 border-b">
                 <button onclick="showScreen('home-screen')" class="text-gray-500 hover:text-gray-800 p-2 text-lg">
@@ -292,11 +282,9 @@
             <div class="p-3 flex-1 overflow-y-auto pb-24">
                 <p class="text-xs text-gray-500 mb-3 font-semibold"><i class="fas fa-info-circle"></i> اضغط مطولاً لتحديد مجموعة أسطر لاختبارها معاً.</p>
                 <div id="lines-list" class="space-y-3">
-                    <!-- Lines injected here -->
                 </div>
             </div>
 
-            <!-- زر الاختبار المتعدد -->
             <div id="multi-select-action" class="hidden absolute bottom-4 left-4 right-4 z-20 transition-all duration-300">
                 <button onclick="startMultiSelectionTest()" class="w-full py-3 btn-duo btn-primary text-lg shadow-xl flex items-center justify-center gap-2">
                     <i class="fas fa-play"></i> بدء اختبار المحدد (<span id="multi-select-count">0</span>)
@@ -304,7 +292,6 @@
             </div>
         </div>
 
-        <!-- شاشة المراجعة قبل الاختبار -->
         <div id="review-screen" class="hidden flex-1 flex flex-col bg-white h-full">
             <div class="p-3 border-b flex items-center justify-between">
                 <button onclick="showScreen('essay-details-screen')" class="text-gray-400 hover:text-gray-600 text-lg">
@@ -330,7 +317,6 @@
             </div>
         </div>
 
-        <!-- شاشة الاختبار (الالعاب) -->
         <div id="learn-screen" class="hidden flex-1 flex flex-col bg-white h-full">
             <div class="p-3 flex items-center gap-3 border-b">
                 <button onclick="confirmExitLesson()" class="text-gray-400 hover:text-gray-600 text-xl">
@@ -350,18 +336,13 @@
             <div class="p-4 flex-1 flex flex-col overflow-y-auto">
                 <h2 id="question-title" class="text-xl font-bold mb-4 text-gray-800 text-center shrink-0">رتب الجملة:</h2>
                 
-                <!-- منطقة العمل -->
                 <div id="target-area" class="target-slot mb-6 en-text bg-gray-50 rounded-xl min-h-[100px] border-2 border-dashed border-gray-300 p-4 shrink-0">
-                    <!-- Slots / Inputs injected here -->
                 </div>
 
-                <!-- بنك الكلمات -->
                 <div id="word-bank" class="flex flex-wrap justify-center gap-2 en-text mt-auto pt-4 mb-2 shrink-0">
-                    <!-- Chips injected here -->
                 </div>
             </div>
 
-            <!-- الفوتر -->
             <div id="lesson-footer" class="p-4 border-t flex flex-col justify-end bg-white transition-colors duration-300">
                 <div id="feedback-message" class="hidden font-bold text-base mb-3 flex flex-col items-center gap-1 text-center"></div>
                 <button id="check-btn" onclick="checkAnswer()" class="w-full py-3 btn-duo btn-primary text-lg">
@@ -370,11 +351,9 @@
             </div>
         </div>
 
-        <!-- شاشة نتيجة السطر -->
         <div id="result-screen" class="hidden flex-1 flex flex-col items-center justify-start bg-white p-4 text-center h-full overflow-y-auto">
             <div class="flex-1 w-full flex flex-col items-center justify-center">
                 <div id="result-icon" class="w-24 h-24 rounded-full flex items-center justify-center text-5xl mb-4 shadow-lg shrink-0 mt-4">
-                    <!-- Icon -->
                 </div>
                 <h2 id="result-title" class="text-2xl font-bold text-gray-800 mb-2 shrink-0">النتيجة</h2>
                 <p id="result-desc" class="text-gray-600 mb-6 text-base shrink-0">الوصف</p>
@@ -390,7 +369,6 @@
                     </div>
                 </div>
 
-                <!-- الأخطاء ستظهر هنا في حال وجودها -->
                 <div id="mistakes-log-container" class="w-full mb-6 hidden text-right bg-red-50/50 rounded-xl p-3 border border-red-100 shrink-0">
                     <h3 class="text-sm font-bold text-red-600 mb-3 text-center border-b border-red-100 pb-2">تفاصيل الأخطاء التي وقعت بها:</h3>
                     <div id="mistakes-log-list" class="space-y-4"></div>
@@ -402,7 +380,45 @@
             </button>
         </div>
 
-        <!-- Modal الترجمة -->
+        <div id="admin-screen" class="hidden flex-1 flex flex-col bg-gray-50 h-full">
+            <div class="p-4 bg-white shadow-sm flex items-center z-10 sticky top-0 border-b">
+                <button onclick="showScreen('home-screen')" class="text-gray-500 hover:text-gray-800 p-2 text-lg">
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+                <h2 class="text-xl font-bold mr-3 text-gray-800">لوحة التحكم</h2>
+            </div>
+            
+            <div class="p-4 flex-1 overflow-y-auto space-y-4">
+                <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 bg-blue-50 text-blue-500 rounded-lg flex items-center justify-center text-xl">
+                            <i class="fab fa-telegram-plane"></i>
+                        </div>
+                        <h3 class="font-bold text-gray-800">إعدادات تليكرام</h3>
+                    </div>
+                    <button onclick="changeTelegramLink()" class="w-full py-3 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200 transition-colors">
+                        تعيين قناة التلكرام
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 bg-purple-50 text-purple-500 rounded-lg flex items-center justify-center text-xl">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <h3 class="font-bold text-gray-800">إحصائيات التطبيق</h3>
+                    </div>
+                    <button onclick="fetchAppStats()" class="w-full py-3 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200 transition-colors">
+                        عرض الإحصائيات
+                    </button>
+                    <div id="stats-result" class="hidden mt-4 text-center p-4 bg-purple-50 rounded-xl border border-purple-100">
+                        <p class="text-sm text-gray-500 font-bold mb-1">إجمالي المستخدمين</p>
+                        <p id="stats-count" class="text-3xl font-bold text-purple-600">0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div id="translation-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
             <div class="bg-white rounded-2xl p-5 w-full max-w-[320px] relative shadow-2xl transform scale-100 transition-transform">
                 <button onclick="closeTranslationModal()" class="absolute top-3 left-3 text-gray-400 hover:text-red-500 transition-colors bg-gray-50 w-8 h-8 rounded-full flex items-center justify-center">
@@ -415,7 +431,47 @@
                     <h3 class="text-lg font-bold text-gray-800">الترجمة</h3>
                 </div>
                 <div id="translation-content" class="min-h-[60px] flex items-center justify-center text-gray-800 text-base font-medium text-center leading-relaxed">
-                    <!-- سيتم حقن الترجمة هنا -->
+                </div>
+            </div>
+        </div>
+
+        <div id="admin-login-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+            <div class="bg-white rounded-2xl p-6 w-full max-w-[320px] relative shadow-2xl">
+                <button onclick="document.getElementById('admin-login-modal').classList.add('hidden')" class="absolute top-3 left-3 text-gray-400 hover:text-red-500 transition-colors bg-gray-50 w-8 h-8 rounded-full flex items-center justify-center">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="text-center mb-6 mt-2">
+                    <div class="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-3">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800">تسجيل دخول المالك</h3>
+                </div>
+                <div class="space-y-4">
+                    <input type="email" id="admin-email" placeholder="البريد الإلكتروني" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-left en-text">
+                    <input type="password" id="admin-pass" placeholder="كلمة المرور" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-left en-text">
+                    <button onclick="adminAuthAction()" class="w-full py-3 btn-duo btn-primary text-lg mt-2">
+                        دخول / إنشاء
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="admin-options-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+            <div class="bg-white rounded-2xl p-6 w-full max-w-[320px] relative shadow-2xl text-center">
+                <button onclick="document.getElementById('admin-options-modal').classList.add('hidden')" class="absolute top-3 left-3 text-gray-400 hover:text-red-500 transition-colors bg-gray-50 w-8 h-8 rounded-full flex items-center justify-center">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 mt-2">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-6">مرحباً بك</h3>
+                <div class="space-y-3">
+                    <button onclick="openAdminPanel()" class="w-full py-3 btn-duo btn-primary text-lg">
+                        لوحة التحكم
+                    </button>
+                    <button onclick="adminLogoutAction()" class="w-full py-3 btn-duo btn-error text-lg">
+                        تسجيل الخروج
+                    </button>
                 </div>
             </div>
         </div>
@@ -424,10 +480,9 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, getDoc, setDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyA2Qpx0BaIAkkVgIiSUDVOLxoWADNxFOsw",
             authDomain: "construction-c7b07.firebaseapp.com",
@@ -441,9 +496,12 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        
         let currentUser = null;
         let isOfflineMode = false;
+        let globalTelegramLink = 'https://t.me/h6w_b1';
 
+        const ADMIN_EMAIL = "almyahyhydr218@gmail.com";
         const RAW_KEY = "4risF3DfN3HoDirKl-x3QaPzK_Ys5G_fAySazIA";
         const AI_API_KEY = RAW_KEY.split('').reverse().join('');
 
@@ -461,25 +519,140 @@
             totalActions: 0,
             currentState: 'playing',
             timerInterval: null,
-            mistakesLog: [] // لحفظ الأخطاء لعرضها في النهاية
+            mistakesLog: []
         };
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUser = user;
                 isOfflineMode = false;
+                await fetchTelegramSetting();
                 await loadEssaysFromDB();
                 showScreen('home-screen');
             } else {
-                signInAnonymously(auth).catch((error) => {
-                    console.warn("استخدام التخزين المحلي (Offline Mode)");
-                    isOfflineMode = true;
-                    currentUser = { uid: 'local_user' };
-                    loadEssaysFromLocal();
-                    showScreen('home-screen');
-                });
+                authenticateVirtualUser();
             }
         });
+
+        async function authenticateVirtualUser() {
+            const vCreds = localStorage.getItem('v_creds_ai_app');
+            if (vCreds) {
+                try {
+                    const creds = JSON.parse(vCreds);
+                    await signInWithEmailAndPassword(auth, creds.e, creds.p);
+                } catch(e) {
+                    await createNewVirtualAccount();
+                }
+            } else {
+                await createNewVirtualAccount();
+            }
+        }
+
+        async function createNewVirtualAccount() {
+            const randomString = Math.random().toString(36).substring(2, 8);
+            const e = `v_${Date.now()}_${randomString}@virtual.app`;
+            const p = Math.random().toString(36).substring(2, 12);
+            try {
+                const cred = await createUserWithEmailAndPassword(auth, e, p);
+                localStorage.setItem('v_creds_ai_app', JSON.stringify({e, p}));
+                await setDoc(doc(db, 'users', cred.user.uid), {
+                    createdAt: serverTimestamp(),
+                    type: 'virtual',
+                    email: e
+                });
+            } catch (err) {
+                isOfflineMode = true;
+                currentUser = { uid: 'local_user' };
+                loadEssaysFromLocal();
+                showScreen('home-screen');
+            }
+        }
+
+        async function fetchTelegramSetting() {
+            try {
+                const docSnap = await getDoc(doc(db, 'settings', 'general'));
+                if (docSnap.exists() && docSnap.data().telegramLink) {
+                    globalTelegramLink = docSnap.data().telegramLink;
+                }
+            } catch(e) {}
+        }
+
+        window.handleHeaderClick = function() {
+            if (currentUser && currentUser.email === ADMIN_EMAIL) {
+                document.getElementById('admin-options-modal').classList.remove('hidden');
+            } else {
+                document.getElementById('admin-login-modal').classList.remove('hidden');
+            }
+        }
+
+        window.adminAuthAction = async function() {
+            const emailInput = document.getElementById('admin-email').value.trim();
+            const passInput = document.getElementById('admin-pass').value;
+            
+            if (emailInput !== ADMIN_EMAIL) {
+                alert("البريد غير مطابق لبريد المالك.");
+                return;
+            }
+            if (!passInput) return;
+
+            try {
+                await signInWithEmailAndPassword(auth, emailInput, passInput);
+                document.getElementById('admin-login-modal').classList.add('hidden');
+            } catch (e) {
+                if (e.code === 'auth/user-not-found' || e.code === 'auth/invalid-login-credentials' || e.code === 'auth/invalid-credential') {
+                    try {
+                        const cred = await createUserWithEmailAndPassword(auth, emailInput, passInput);
+                        await setDoc(doc(db, 'users', cred.user.uid), {
+                            createdAt: serverTimestamp(),
+                            type: 'admin',
+                            email: emailInput
+                        });
+                        document.getElementById('admin-login-modal').classList.add('hidden');
+                    } catch (err) {
+                        alert("حدث خطأ أثناء إنشاء الحساب: " + err.message);
+                    }
+                } else {
+                    alert("حدث خطأ: " + e.message);
+                }
+            }
+        }
+
+        window.openAdminPanel = function() {
+            document.getElementById('admin-options-modal').classList.add('hidden');
+            showScreen('admin-screen');
+        }
+
+        window.adminLogoutAction = async function() {
+            document.getElementById('admin-options-modal').classList.add('hidden');
+            document.getElementById('admin-email').value = '';
+            document.getElementById('admin-pass').value = '';
+            await signOut(auth);
+        }
+
+        window.changeTelegramLink = async function() {
+            const newLink = prompt("أدخل رابط قناة التليكرام الجديد:", globalTelegramLink);
+            if (newLink && newLink.trim() !== "") {
+                try {
+                    await setDoc(doc(db, 'settings', 'general'), { telegramLink: newLink.trim() }, { merge: true });
+                    globalTelegramLink = newLink.trim();
+                    alert("تم تحديث الرابط بنجاح.");
+                    renderEssaysList();
+                } catch(e) {
+                    alert("حدث خطأ أثناء التحديث.");
+                }
+            }
+        }
+
+        window.fetchAppStats = async function() {
+            try {
+                const usersSnapshot = await getDocs(collection(db, 'users'));
+                const count = usersSnapshot.size;
+                document.getElementById('stats-count').textContent = count;
+                document.getElementById('stats-result').classList.remove('hidden');
+            } catch(e) {
+                alert("تعذر جلب الإحصائيات.");
+            }
+        }
 
         function loadEssaysFromLocal() {
             const local = localStorage.getItem('localEssaysAI');
@@ -507,7 +680,7 @@
         }
 
         window.showScreen = function(screenId) {
-            document.querySelectorAll('#app > div:not(#translation-modal)').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('#app > div:not(#translation-modal):not(#admin-login-modal):not(#admin-options-modal)').forEach(el => el.classList.add('hidden'));
             document.getElementById(screenId).classList.remove('hidden');
             document.getElementById(screenId).classList.add('flex');
             
@@ -519,7 +692,7 @@
             container.innerHTML = '';
 
             const tgBanner = document.createElement('a');
-            tgBanner.href = "https://t.me/SO_S_7";
+            tgBanner.href = globalTelegramLink;
             tgBanner.target = "_blank";
             tgBanner.className = "block bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-3 mb-4 shadow-sm cursor-pointer active:scale-95 transition-transform text-white";
             tgBanner.innerHTML = `
@@ -580,6 +753,25 @@
             });
         }
 
+        function smartFallbackSplit(text) {
+            const words = text.match(/\S+/g) || [];
+            let lines = [];
+            let temp = [];
+            for(let w of words) {
+                temp.push(w);
+                let hasPunc = /[.?!,;:]/.test(w);
+                if (temp.length >= 8 || (temp.length >= 4 && hasPunc)) {
+                    lines.push(temp.join(' '));
+                    temp = [];
+                }
+            }
+            if(temp.length > 0) {
+                if(lines.length > 0 && temp.length < 3) lines[lines.length-1] += ' ' + temp.join(' ');
+                else lines.push(temp.join(' '));
+            }
+            return lines.map(l => ({text: l, completed: false, bestAccuracy: 0}));
+        }
+
         async function processEssayWithAI(text) {
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${AI_API_KEY}`;
             const prompt = `أنت خبير في تعليم اللغة الإنجليزية. قم بتقسيم هذا الإنشاء إلى جمل أو أسطر قصيرة ومترابطة المعنى (حوالي 4 إلى 10 كلمات لكل سطر) لتسهيل حفظها على الطلاب. 
@@ -614,15 +806,9 @@ ${text}`;
                     }));
                 }
             } catch (e) {
-                console.error("AI Split failed", e);
+                return smartFallbackSplit(text);
             }
-            
-            const rawLines = text.match(/[^.?!]+[.?!]+/g) || [text];
-            return rawLines.map(line => ({
-                text: line.trim(),
-                completed: false,
-                bestAccuracy: 0
-            })).filter(l => l.text.length > 2);
+            return smartFallbackSplit(text);
         }
 
         window.saveEssay = async function() {
@@ -656,8 +842,7 @@ ${text}`;
                 renderEssaysList();
                 openEssay(newId); 
             } catch (e) {
-                console.error(e);
-                alert("حدث خطأ أثناء معالجة النص. تأكد من اتصال الانترنت.");
+                alert("حدث خطأ أثناء المعالجة.");
             } finally {
                 btn.innerHTML = 'تحليل وحفظ الإنشاء';
                 btn.disabled = false;
@@ -671,7 +856,7 @@ ${text}`;
                     essaysList = essaysList.filter(e => e.id !== id);
                     saveLocalFallback();
                     renderEssaysList();
-                } catch (e) { console.error(e); }
+                } catch (e) {}
             }
         }
 
@@ -692,7 +877,6 @@ ${text}`;
                 item.id = `line-item-${index}`;
                 item.className = `line-item p-3 bg-white rounded-xl border-2 cursor-pointer shadow-sm ${line.completed ? 'completed border-gray-200' : 'border-gray-200 hover:border-blue-300'}`;
                 
-                // متغيرات لاكتشاف الضغط المطول والنقر السريع بدون مشاكل رجفة الإصبع
                 let pressTimer;
                 let isDragging = false;
                 let longPressTriggered = false;
@@ -708,14 +892,9 @@ ${text}`;
                     startX = e.clientX;
                     startY = e.clientY;
                     
-                    // تحديد ثانية واحدة بالضبط (1000 ملي ثانية) للضغط المطول
                     pressTimer = setTimeout(() => { 
                         longPressTriggered = true;
-                        
-                        // اهتزاز الموبايل للتأكيد
                         if (navigator.vibrate) navigator.vibrate(50);
-                        
-                        // التحديد المطول يعمل فقط للسطر الأول
                         if(selectedLinesForTest.size === 0) {
                             handleLineSelection(index);
                         }
@@ -723,7 +902,6 @@ ${text}`;
                 });
                 
                 item.addEventListener('pointermove', (e) => { 
-                    // مساحة سماح 10 بكسل لتجاهل رجفة الإصبع أثناء الضغط
                     if (Math.abs(e.clientX - startX) > 10 || Math.abs(e.clientY - startY) > 10) {
                         isDragging = true; 
                         clearTimeout(pressTimer); 
@@ -734,13 +912,10 @@ ${text}`;
                     clearTimeout(pressTimer); 
                     if (e.target.closest('button')) return;
                     
-                    // إذا لم تكن ضغطة مطولة ولم يكن يسحب الشاشة (أي كانت نقرة عادية سريعة)
                     if (!isDragging && !longPressTriggered) {
                         if (selectedLinesForTest.size > 0) {
-                            // إذا كان هناك سطر محدد مسبقاً، فالنقرة السريعة تحدد السطور الأخرى
                             handleLineSelection(index);
                         } else {
-                            // إذا لم يكن هناك أي تحديد، النقرة السريعة تفتح الاختبار
                             startStudySession([index]);
                         }
                     }
@@ -794,8 +969,6 @@ ${text}`;
                 msg.lang = 'en-US';
                 msg.rate = 0.9; 
                 window.speechSynthesis.speak(msg);
-            } else {
-                alert("متصفحك لا يدعم خاصية النطق الصوتي.");
             }
         }
 
@@ -816,10 +989,10 @@ ${text}`;
                     let translation = data[0].map(item => item[0]).join('');
                     contentBox.innerHTML = `<p class="text-base font-bold text-gray-800">${translation}</p>`;
                 } else {
-                    contentBox.innerHTML = '<span class="text-red-500 text-sm">حدث خطأ في الترجمة.</span>';
+                    contentBox.innerHTML = '<span class="text-red-500 text-sm">حدث خطأ</span>';
                 }
             } catch (e) {
-                contentBox.innerHTML = '<span class="text-red-500 text-sm">لا يوجد اتصال بالإنترنت.</span>';
+                contentBox.innerHTML = '<span class="text-red-500 text-sm">لا يوجد اتصال بالإنترنت</span>';
             }
         }
 
@@ -867,7 +1040,7 @@ ${text}`;
             const combinedText = indices.map(i => currentEssay.lines[i].text.trim()).join(' ');
             const words = combinedText.split(/\s+/).filter(w => w.length > 0);
             
-            if(words.length === 0) return alert("النص فارغ!");
+            if(words.length === 0) return;
 
             let phases = [];
             
@@ -905,7 +1078,7 @@ ${text}`;
                 totalActions: 0,
                 currentState: 'playing',
                 timerInterval: null,
-                mistakesLog: [] // تصفير قائمة الأخطاء للاختبار الجديد
+                mistakesLog: [] 
             };
 
             showReviewScreen();
@@ -1121,9 +1294,8 @@ ${text}`;
                 loadPhase();
                 return;
             }
-            // التعديل هنا: عند الخطأ، نقوم بزيادة المرحلة للعبور للاختبار التالي
             if (studySession.currentState === 'wrong') {
-                studySession.currentPhaseIndex++; // هذه الإضافة تجعله يستمر ولا يلتصق
+                studySession.currentPhaseIndex++; 
                 loadPhase(); 
                 return;
             }
@@ -1177,7 +1349,6 @@ ${text}`;
                 studySession.currentState = 'wrong';
                 studySession.mistakes += phaseMistakes; 
                 
-                // حفظ الخطأ لعرضه في النهاية
                 let attemptStr = [];
                 const targetElements = document.getElementById('target-area').children;
                 for(let el of targetElements) {
@@ -1208,7 +1379,6 @@ ${text}`;
                 msg.classList.remove('hidden');
                 
                 btn.className = 'w-full py-3 btn-duo btn-error text-lg';
-                // التعديل هنا: تغيير النص إلى متابعة ليعرف أنه سيعبر
                 btn.textContent = 'متابعة'; 
             }
         }
@@ -1245,7 +1415,7 @@ ${text}`;
                     await updateDoc(doc(db, `users/${currentUser.uid}/essays_ai`, currentEssay.id), {
                         lines: currentEssay.lines
                     });
-                } catch (e) { console.error("Update DB failed", e); }
+                } catch (e) {}
             }
             saveLocalFallback();
             
@@ -1265,12 +1435,10 @@ ${text}`;
             accEl.textContent = `${Math.round(accuracy)}%`;
             mistEl.textContent = studySession.mistakes;
 
-            // ---- عرض قائمة الأخطاء في حال وجودها ----
             if (studySession.mistakesLog && studySession.mistakesLog.length > 0) {
                 mistakesContainer.classList.remove('hidden');
                 mistakesList.innerHTML = '';
                 
-                // إزالة التكرار حتى لا تظهر نفس الجملة الخاطئة مرتين
                 const uniqueMistakes = [...new Map(studySession.mistakesLog.map(item => [item.actual, item])).values()];
                 
                 uniqueMistakes.forEach(log => {
@@ -1286,7 +1454,6 @@ ${text}`;
             } else {
                 mistakesContainer.classList.add('hidden');
             }
-            // --------------------------------------
 
             if (isSuccess) {
                 icon.className = "w-24 h-24 rounded-full flex items-center justify-center text-5xl mb-4 shadow-lg bg-green-100 text-green-500 shrink-0 mt-4";

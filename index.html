@@ -489,6 +489,54 @@
             </div>
         </div>
 
+        <div id="essay-options-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+            <div class="bg-white rounded-2xl p-6 w-full max-w-[320px] relative shadow-2xl">
+                <button onclick="closeEssayOptions()" class="absolute top-3 left-3 text-gray-400 hover:text-red-500 transition-colors bg-gray-50 w-8 h-8 rounded-full flex items-center justify-center">
+                    <i class="fas fa-times"></i>
+                </button>
+                <h3 class="text-xl font-bold text-gray-800 mb-6 text-center border-b pb-3">خيارات الإنشاء</h3>
+                <div class="space-y-3">
+                    <button onclick="viewFullEssayAction()" class="w-full py-3 btn-duo bg-gray-100 text-gray-800 shadow-sm border border-gray-200">
+                        <i class="fas fa-file-alt ml-2"></i> عرض النص الكامل
+                    </button>
+                    <button onclick="editEssayAction()" class="w-full py-3 btn-duo bg-blue-50 text-blue-600 shadow-sm border border-blue-100">
+                        <i class="fas fa-edit ml-2"></i> تعديل الإنشاء
+                    </button>
+                    <button onclick="deleteEssayAction()" class="w-full py-3 btn-duo bg-red-50 text-red-600 shadow-sm border border-red-100">
+                        <i class="fas fa-trash-alt ml-2"></i> حذف الإنشاء
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-essay-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+            <div class="bg-white rounded-2xl p-5 w-full max-w-[400px] max-h-[80vh] relative shadow-2xl flex flex-col">
+                <button onclick="closeViewFullEssay()" class="absolute top-3 left-3 text-gray-400 hover:text-red-500 transition-colors bg-gray-50 w-8 h-8 rounded-full flex items-center justify-center z-10">
+                    <i class="fas fa-times"></i>
+                </button>
+                <h3 class="text-lg font-bold text-gray-800 border-b pb-3 mb-3 text-center">النص الكامل</h3>
+                <div class="overflow-y-auto flex-1 p-2 bg-gray-50 rounded-xl border border-gray-100">
+                    <p id="view-essay-content" class="en-text text-base font-semibold leading-relaxed text-gray-800 text-left whitespace-pre-wrap"></p>
+                </div>
+            </div>
+        </div>
+
+        <div id="edit-essay-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+            <div class="bg-white rounded-2xl p-5 w-full max-w-[400px] max-h-[90vh] relative shadow-2xl flex flex-col">
+                <button onclick="closeEditEssayModal()" class="absolute top-3 left-3 text-gray-400 hover:text-red-500 transition-colors bg-gray-50 w-8 h-8 rounded-full flex items-center justify-center z-10">
+                    <i class="fas fa-times"></i>
+                </button>
+                <h3 class="text-lg font-bold text-gray-800 border-b pb-3 mb-3 text-center">تعديل الإنشاء</h3>
+                <div class="flex-1 overflow-y-auto flex flex-col">
+                    <p class="text-xs text-blue-600 bg-blue-50 p-2 rounded-lg mb-3"><i class="fas fa-info-circle"></i> بعد حفظ التعديلات سيقوم الذكاء الاصطناعي بإعادة تحليل الأسطر وتحديثها.</p>
+                    <textarea id="edit-essay-textarea" class="w-full p-3 border-2 border-gray-200 rounded-xl flex-1 min-h-[200px] focus:outline-none focus:border-blue-500 transition-colors en-text text-base resize-none"></textarea>
+                </div>
+                <button id="save-edit-btn" onclick="saveEditedEssay()" class="w-full py-3 mt-4 btn-duo btn-primary text-lg shrink-0">
+                    حفظ التعديلات
+                </button>
+            </div>
+        </div>
+
     </div>
 
     <script type="module">
@@ -522,6 +570,7 @@
         let currentEssay = null;
         let currentTestedIndices = []; 
         let selectedLinesForTest = new Set(); 
+        let activeOptionsEssayId = null;
         
         let studySession = {
             lineText: "",
@@ -693,7 +742,7 @@
         }
 
         window.showScreen = function(screenId) {
-            document.querySelectorAll('#app > div:not(#translation-modal):not(#admin-login-modal):not(#admin-options-modal)').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('#app > div:not(#translation-modal):not(#admin-login-modal):not(#admin-options-modal):not(#essay-options-modal):not(#view-essay-modal):not(#edit-essay-modal)').forEach(el => el.classList.add('hidden'));
             document.getElementById(screenId).classList.remove('hidden');
             document.getElementById(screenId).classList.add('flex');
             
@@ -754,8 +803,8 @@
                             <h3 class="font-bold text-gray-800 text-base">${essay.title}</h3>
                             <p class="text-[10px] text-gray-500">${totalLines} أسطر • ${completed} مكتمل</p>
                         </div>
-                        <button onclick="event.stopPropagation(); deleteEssay('${essay.id}')" class="w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-500 rounded-full transition-colors text-sm">
-                            <i class="fas fa-trash-alt"></i>
+                        <button onclick="event.stopPropagation(); openEssayOptions('${essay.id}')" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-blue-500 rounded-full transition-colors text-lg">
+                            <i class="fas fa-ellipsis-v"></i>
                         </button>
                     </div>
                     <div class="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden flex items-center">
@@ -764,6 +813,55 @@
                 `;
                 container.appendChild(card);
             });
+        }
+
+        window.openEssayOptions = function(id) {
+            activeOptionsEssayId = id;
+            document.getElementById('essay-options-modal').classList.remove('hidden');
+        }
+
+        window.closeEssayOptions = function() {
+            document.getElementById('essay-options-modal').classList.add('hidden');
+            activeOptionsEssayId = null;
+        }
+
+        window.viewFullEssayAction = function() {
+            const essay = essaysList.find(e => e.id === activeOptionsEssayId);
+            if(essay) {
+                document.getElementById('view-essay-content').textContent = essay.content;
+                document.getElementById('essay-options-modal').classList.add('hidden');
+                document.getElementById('view-essay-modal').classList.remove('hidden');
+            }
+        }
+
+        window.closeViewFullEssay = function() {
+            document.getElementById('view-essay-modal').classList.add('hidden');
+        }
+
+        window.editEssayAction = function() {
+            const essay = essaysList.find(e => e.id === activeOptionsEssayId);
+            if(essay) {
+                document.getElementById('edit-essay-textarea').value = essay.content;
+                document.getElementById('essay-options-modal').classList.add('hidden');
+                document.getElementById('edit-essay-modal').classList.remove('hidden');
+            }
+        }
+
+        window.closeEditEssayModal = function() {
+            document.getElementById('edit-essay-modal').classList.add('hidden');
+            document.getElementById('edit-essay-textarea').value = '';
+        }
+
+        window.deleteEssayAction = async function() {
+            if (confirm("هل انت متأكد من حذف هذا الانشاء بالكامل؟")) {
+                try {
+                    if (!isOfflineMode) await deleteDoc(doc(db, `users/${currentUser.uid}/essays_ai`, activeOptionsEssayId));
+                    essaysList = essaysList.filter(e => e.id !== activeOptionsEssayId);
+                    saveLocalFallback();
+                    renderEssaysList();
+                    closeEssayOptions();
+                } catch (e) {}
+            }
         }
 
         function smartFallbackSplit(text) {
@@ -862,14 +960,39 @@ ${text}`;
             }
         }
 
-        window.deleteEssay = async function(id) {
-            if (confirm("هل انت متأكد من حذف هذا الانشاء؟")) {
-                try {
-                    if (!isOfflineMode) await deleteDoc(doc(db, `users/${currentUser.uid}/essays_ai`, id));
-                    essaysList = essaysList.filter(e => e.id !== id);
-                    saveLocalFallback();
-                    renderEssaysList();
-                } catch (e) {}
+        window.saveEditedEssay = async function() {
+            const btn = document.getElementById('save-edit-btn');
+            const newContent = document.getElementById('edit-essay-textarea').value.trim();
+            
+            if(!newContent) return;
+            const essayIndex = essaysList.findIndex(e => e.id === activeOptionsEssayId);
+            if(essayIndex === -1) return;
+
+            btn.innerHTML = '<i class="fas fa-robot fa-spin"></i> جاري الحفظ والتحديث...';
+            btn.disabled = true;
+
+            try {
+                const lines = await processEssayWithAI(newContent);
+                if(!lines || lines.length === 0) throw new Error("Failed to split");
+
+                essaysList[essayIndex].content = newContent;
+                essaysList[essayIndex].lines = lines;
+
+                if (!isOfflineMode) {
+                    await updateDoc(doc(db, `users/${currentUser.uid}/essays_ai`, activeOptionsEssayId), {
+                        content: newContent,
+                        lines: lines
+                    });
+                }
+
+                saveLocalFallback();
+                renderEssaysList();
+                closeEditEssayModal();
+            } catch (e) {
+                alert("حدث خطأ أثناء التحديث.");
+            } finally {
+                btn.innerHTML = 'حفظ التعديلات';
+                btn.disabled = false;
             }
         }
 
